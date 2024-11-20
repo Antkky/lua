@@ -1,17 +1,31 @@
 local prefix = "."
-local CommandingPlayer = game.Players:FindFirstChild("notbigboyman")
+local CommandingPlayer
+local LocalPlayer
+local character
+local humanoidRootPart
 
-if not CommandingPlayer then
-    error("Player not found: " .. "notbigboyman")
+local function onGameLoaded()
+    print("loading controller")
+    CommandingPlayer = game.Players:FindFirstChild("notbigboyman")
+    LocalPlayer = game.Players.LocalPlayer
+    character = workspace:FindFirstChild(LocalPlayer.Name)
+    humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+
+    game:GetService("StarterGui"):SetCore(
+    "SendNotification",
+    {
+        Title = "Notification",
+        Text = "@Antkky",
+        Icon = "rbxthumb://type=Asset&id=5107182114&w=150&h=150",
+        Duration = 16
+    }
+)
+
 end
 
-local LocalPlayer = game.Players.LocalPlayer
-
 Local function Execute(command, args)
-    local character = workspace:FindFirstChild(LocalPlayer.Name)
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-
     if command == "float" then
+        print("float")
         local amount = 10
         if args then
             amount = args
@@ -26,8 +40,11 @@ Local function Execute(command, args)
     end
 end
 
+game.Loaded:Connect(onGameLoaded)
+
 CommandingPlayer.Chatted:Connect(function(msg)
     msg = msg:lower()
+    print(msg)
 
     if string.sub(msg, 1, 1) == prefix then
         local msgWithoutPrefix = string.sub(msg, 2)
@@ -37,15 +54,9 @@ CommandingPlayer.Chatted:Connect(function(msg)
             return -- malformed command
         end
 
-        -- Extract the command from the message
         local command = string.sub(msgWithoutPrefix, 1, firstSpace - 1)
-
-        -- Remove the command part and trim the rest of the message
         local remainingMsg = string.sub(msgWithoutPrefix, firstSpace + 1)
-
-        -- Find the second space (separating player from arguments)
         local secondSpace = string.find(remainingMsg, " ")
-
         local playerName, args
 
         if secondSpace then
@@ -69,13 +80,3 @@ CommandingPlayer.Chatted:Connect(function(msg)
         end
     end
 end)
-
-game:GetService("StarterGui"):SetCore(
-    "SendNotification",
-    {
-        Title = "Notification",
-        Text = "@Antkky",
-        Icon = "rbxthumb://type=Asset&id=5107182114&w=150&h=150",
-        Duration = 16
-    }
-)
